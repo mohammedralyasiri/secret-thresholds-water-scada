@@ -1,0 +1,49 @@
+STUDY 5 (FROZEN) - Network-fidelity check of the secret-threshold watermark
+=====================================================================================
+
+Status: exploratory extension added after Study 4, at the authors' request, to answer the
+question "does the result survive a real SCADA communication layer?". Not part of the
+Study 3/4 registrations; it will be reported as a separate, clearly labelled study.
+
+5a  Measurement (no hypothesis)
+    Platform: DHALSIM (Murillo et al., 2023), C-Town topology, 9 PLCs + SCADA over
+    EtherNet/IP on Mininet (Linux-bridge switches; no netem available), epynet simulator,
+    5-min hydraulic step. PLC rule pairs replaced by secret-band controls (frac 0.3, redrawn
+    after each switch; defender log of every switch with its secret threshold).
+    Runs: normal operation, 2 simulated days (576 steps), seed 1. Warm-up: first 12 steps dropped.
+    Outputs: for every tank tag, the fraction of steps on which the SCADA value differs from
+    the ground-truth value of the same step and equals an earlier step ("stale"), the stale-run
+    length distribution, and the lag between an actuator change in ground truth and in SCADA.
+
+5b  Robustness study in the process-level simulator (registered hypothesis)
+    Change to pilot16.py: the value reported to SCADA for each tank and each actuator status is
+    replaced, independently per tag and step, by the previous reported value with the
+    per-tag stale probability and run-length distribution measured in 5a (a two-state Markov
+    channel fitted to 5a). The PLC itself is unaffected. Calibration and testing both see the
+    channel. Nothing else changes (same KAPPA, ZCLIP, budgets, CAL 56, EP 8, forgers).
+    Network: C-Town. Seeds 500-509. Arms: passive, hyst0.3, delay0.3.
+    H5-1: hyst0.3 > delay0.3 on the primary outcome at 1 FA/week (paired Wilcoxon, p < 0.05).
+    Also reported (no test): drop of hyst0.3's primary outcome relative to Study 4 C-Town,
+    FA/week, redraws, exc metrics. Same validity rules as Study 4 (FA > 2/week invalidates).
+
+5c  Demonstration on DHALSIM (descriptive only)
+    One 2-day run with DHALSIM's built-in concealment MITM (payload replay of the tank-level tag
+    to SCADA, as shipped in examples/ctown_topology) with secret-band PLCs. Report the switch
+    log versus the SCADA-reported levels at the switch steps (figure), before and during the
+    attack. No detection rate is claimed from a single run.
+
+Freeze: text approved by the author in chat 2026-11-16 10:34 Baghdad time and frozen now; the md5 of the 5b code is appended below before any seed 500-509 is run.
+Frozen at 2026-11-16T07:35:01Z  md5(text above)=795f484be3f123648667fa563cddde5f
+
+AMENDMENT A1 (2026-11-16, before any 5b seed was run):
+The single 576-step 5a run was stopped by the compute wall-clock limit after 228 steps
+(output preserved in dh_out/s5a_run1, log dh_s5a_run1.log). 5a is therefore measured as
+two independent DHALSIM runs: run1 = 228 steps (secret seed 1) and run2 = 220 steps
+(secret seed 2), each dropping its first 12 warm-up steps, pooled for the channel fit
+(fit5a.py pools runs; a/b estimated from pooled transitions). Total ~424 post-warm-up
+steps instead of 564. This changes nothing in 5b design or hypotheses.
+
+FREEZE 5b (2026-11-16T11:45:04Z), before any seed 500-509 run:
+4cda1e59faa1d3e9aeeb216d577081e3  pilot17.py
+88453c13b0cc7849f40d78d3b613a4a4  fit5a.py
+79c66edeee0f0eb0b56d29c16575b06b  chan_ctown.json

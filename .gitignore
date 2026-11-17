@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+*.rpt
+net_real*.inp
+net_twin*.inp
+*_processed.inp

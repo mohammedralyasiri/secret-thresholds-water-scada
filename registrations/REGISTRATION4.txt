@@ -1,0 +1,54 @@
+STUDY 4 - REGISTRATION. Approved by the author in chat on 2026-11-15 (21:27 Baghdad time) before any seed 400-409 was run.
+
+1. Purpose
+   Compare secret switching thresholds (Study 3) with the nearest prior idea and with two further baselines:
+   a random switching DELAY (time-domain watermark in the style of Ahmed et al., 2024, arXiv:2409.16536),
+   PARSIMONIOUS probing in the spirit of Naha et al. (2023, Automatica), and a passive reconstruction AUTOENCODER
+   in the spirit of the BATADAL detectors (e.g. Raza et al., 2025). These are implementations "in the spirit of", not replications.
+
+2. Design (fixed)
+   Networks: C-Town, Richmond, Net6. Seeds 400-409 on each (never used). Development seeds 100-101 excluded.
+   Arms, in this order: passive | ae | tog-rival (12 toggles/day, best single actuator) |
+     pars-rival (base 4 toggles/day, 48/day while the probe statistic Q > 1.5; same actuator choice as tog-rival) |
+     hyst0.3 (secret thresholds, dither 30 % of each band, inward) |
+     delay0.3 (public thresholds; switch executed after a secret delay of 0..K steps; K matched per actuator to the 30 % dither from the
+               level speed before a natural switch, clipped 1..12; safety cap: switch at once if the level is more than 30 % of the band
+               beyond the threshold; detector additionally tests "switch withheld" events with a separate CUSUM, alarm budget split equally).
+   Forger knowledge for delay0.3: knows the scheme and the delay range, not the drawn delay; sees commands one step late (same as for hyst0.3).
+   False-alarm target 0.0005 per step (1/week) PRIMARY; 0.01 secondary. Calibration 56 days, independent clean run 56 days.
+   8 episodes per scenario x forger; 12 h warm-up, 12 h attack. Forgers in model: twin, replay, observer-lag, zero-residual.
+   Out of model (reported only): real-time observer. Scenarios are derived from the public-threshold model (first arm), as in Study 3.
+
+3. Outcomes
+   PRIMARY: per seed, mean placebo-corrected excess timeliness over scenarios and the four in-model forgers, at 1 false alarm/week.
+   SAFETY: per seed, 99th percentile over the clean run of the largest distance of a controlled tank level outside its operating envelope
+           (lowest on-threshold to highest off-threshold), as a fraction of the envelope (exc_p99).
+   SECONDARY: worst-case excess; switch operations/day; realised false alarms/week; exc_frac, exc_max.
+
+4. Hypotheses and tests (paired Wilcoxon over the 10 seeds, two-sided, alpha 0.05, per network)
+   H4-1 (primary): hyst0.3 > delay0.3 on the primary outcome on each network.
+   H4-2 (safety):  exc_p99 of hyst0.3 < exc_p99 of delay0.3 on each network.
+   H4-3: the autoencoder does not detect: mean primary outcome of ae < 0.05 on each network.
+   P4-1 (prediction): hyst0.3 > pars-rival on Richmond and Net6; pars-rival > hyst0.3 on C-Town.
+   P4-2 (prediction): pars-rival >= tog-rival on each network.
+
+5. Validity rules
+   a. An episode in which the simulator fails or its clock does not advance is discarded and redrawn; counts reported per network.
+   b. An arm whose realised false-alarm rate, averaged over the 10 seeds, exceeds 2 per week is reported as failing the budget and cannot
+      support a hypothesis; the number of individual seeds above 2 is also reported. (Clarifies the ambiguity met in Study 3.)
+   c. If switch operations/day of pars-rival exceed those of tog-rival by more than 15 %, pars-rival is reported as not cost-matched.
+   d. Results are reported as obtained. No change to code, arms, outcomes or tests after freezing.
+
+6. What is already known (development seeds 100-101, 4 episodes, 28-day calibration; NOT evidence)
+   Primary outcome:      C-Town   Richmond
+     hyst0.3              0.44     0.33
+     delay0.3             0.18     0.05
+     pars-rival           0.50-0.61 (settings varied)   0.06-0.16
+     ae                   0.015    0.009
+   Development history, disclosed: (i) first delay-matching rule used the all-day level speed and gave the maximum delay everywhere - replaced;
+   (ii) first excursion metric was per rule, not per tank - replaced; (iii) the event test only caught a forger switching LATE; the delay arm
+   needs the mirror test (forger switching EARLY) - added, with its own CUSUM; (iv) pars settings (base 4/day, Q > 1.5) chosen so that its
+   switching cost is close to tog-rival on development seeds. Per-event evidence was checked to be similar for hyst0.3 and delay0.3;
+   the remaining gap on development seeds is mainly the number of switching events (delay lengthens pump cycles, inward dither shortens them).
+Frozen 2026-11-15T18:34:15Z
+c1b8121123fe9a3166acb429f8e635b7  pilot16.py

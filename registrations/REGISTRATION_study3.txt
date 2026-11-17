@@ -1,0 +1,53 @@
+STUDY 3 - REGISTRATION (in force). Approved by the author in chat on 2026-11-15 before any seed 300-309 was run.
+
+1. Question
+   Does a secret-threshold (dithered hysteresis) defence, with toggle probes allocated to what natural switching leaves
+   uncovered, detect forged tank levels better than toggle probes alone, at a realistic false-alarm rate?
+
+2. Frozen material
+   Code: run15/pilot15.py = run14dev/dev14d.py (matched event statistic, event CUSUM kappa 0.5, clip 5, simulator guard)
+         plus per-arm resume files and a redraw of long attack-free runs when the simulator guard fires. No other change.
+   Networks: C-Town, Richmond, Net6. Seeds 300-309 on each (never used before). Development seeds 100-101 excluded.
+   Arms: passive | tog-rival (12 toggles/day, best single actuator) | tog-game (12/day, maximin) |
+         hyst0.3 (secret thresholds, no toggles) | hyst0.3+ogame (secret thresholds + 12 toggles/day, offset game) [PROPOSED]
+   Dither width fixed at 30 % of each operating band. Toggle budget fixed at 12/day.
+   False-alarm target: 0.0005 per step (1 per week) PRIMARY; 0.01 per step secondary (continuity with Studies 1-2).
+   Calibration 56 days, independent clean run 56 days. 8 episodes per scenario x forger; 12 h warm-up, 12 h attack.
+   Forgers in model: twin, replay, observer-lag, zero-residual. Out of model (reported only): real-time observer.
+
+3. Outcome
+   Excess timeliness = timeliness under attack minus timeliness of the paired placebo episode (same seeds, no attack).
+   PRIMARY: per seed, mean excess over scenarios and the four in-model forgers, at 1 false alarm/week.
+   SECONDARY: per seed, minimum over scenario x forger of mean excess (worst case); switch operations per day; realised false alarms/week.
+
+4. Hypotheses and tests (paired Wilcoxon over the 10 seeds, two-sided, Holm over the two comparisons per network)
+   H1 (primary): hyst0.3+ogame > tog-rival AND > tog-game on the primary outcome, on each of the three networks.
+       Supported on a network only if both Holm-adjusted p < 0.05 and both differences are positive.
+   H2: hyst0.3 (no toggles) > the better of the two toggle arms on Richmond and Net6.
+   Prediction P1: worst-case excess is below 0.15 for every arm on every network (no method gives coverage).
+   Prediction P2: on C-Town, tog-rival > tog-game on the primary outcome (concentration beats the game when information is scarce).
+
+5. Validity rules
+   a. An episode in which the simulator clock does not advance is discarded and redrawn; the count is reported per network.
+   b. An arm whose realised false-alarm rate exceeds 2 per week on the clean run is reported as failing the budget; its
+      detection figures are shown but it cannot support a hypothesis.
+   c. Results are reported as obtained. No change to detector, dither width, budget, outcome or tests after approval.
+
+6. What is already known (development, 2 seeds, 4 episodes; NOT evidence)
+   Primary outcome at 1 FA/week:   C-Town  Richmond  Net6
+     tog-rival                      0.54    0.03      0.06
+     tog-game                       0.33    0.02      0.03
+     hyst0.3                        0.41    0.42      0.15
+     hyst0.3+ogame                  0.59    0.42      0.24
+   Known weaknesses: realised false alarms on Net6 were 3.5-4.3/week for the toggle arms with 28-day calibration;
+   worst case near zero everywhere; Studies 1-2 on Richmond are void (silent simulator halts in 15 of 24 test episodes).
+Registered 2026-11-15T07:03:10Z
+c1704bf885cf6e277e07e7076ef928d0  pilot15.py
+b9acd065e296eff16c51671266a6252a  ../run13/ctown/pilot13_ctown.py
+de05fbaac91c8b52c6c44238a01f41f2  ../run13/net6/pilot13_net6.py
+1d3541294d3fd7f73b5651c10d1ab091  ../run13/rich/pilot13_rich.py
+
+AMENDMENT 1, 2026-11-15T07:05:29Z. The first launch stopped during calibration of the first arm on both networks: a continuous
+56-day attack-free run exceeds the simulator's run length (clock stops). No attack episode and no outcome had been computed.
+Change: attack-free runs longer than 28 days are split into 28-day segments, each restarted. Nothing else changed.
+c99c24931f7cd2dcdc2015602db0be1e  pilot15.py
