@@ -1,7 +1,7 @@
 {
  "runs": [
-  "/home/claude/dh_out/s5a_run1",
-  "/home/claude/dh_out/s5a_run2"
+  "./dh_out/s5a_run1",
+  "./dh_out/s5a_run2"
  ],
  "n_steps": 425,
  "levels": {

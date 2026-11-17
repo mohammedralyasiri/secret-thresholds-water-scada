@@ -6,7 +6,7 @@ net = sys.argv[1]; seeds = [int(x) for x in sys.argv[2].split(',')]; EP = int(os
 ALPHAS = [float(x) for x in os.environ.get('ALPHAS', '0.0005,0.01').split(',')]      # total per-step false-alarm targets
 CAL = int(os.environ.get('CAL', 28)); TAG = os.environ.get('TAG', 'd')
 ARMS = os.environ.get('ARMS', 'passive,tog-rival,tog-game,hyst0.08,hyst0.08+ogame,hyst0.08+unif').split(',')
-root = '/home/claude/pilot'; wd = f'{root}/run16/{net}'; os.makedirs(wd, exist_ok=True); os.chdir(wd)
+root = './pilot'; wd = f'{root}/run16/{net}'; os.makedirs(wd, exist_ok=True); os.chdir(wd)
 sys.path.insert(0, f'{root}/run13/{net}')
 P = importlib.import_module(f'pilot13_{net}')
 # --- simulator guards (found 15 Nov): the Richmond and Net6 files say "Unbalanced Stop", which silently ends the EPANET run

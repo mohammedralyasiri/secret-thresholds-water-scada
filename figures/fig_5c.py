@@ -4,7 +4,7 @@
 import sys, numpy as np, pandas as pd, matplotlib
 matplotlib.use('Agg'); import matplotlib.pyplot as plt
 plt.rcParams.update({'font.family':'DejaVu Sans','font.size':10})
-d=sys.argv[1] if len(sys.argv)>1 else '/home/claude/dh_out/s5c'
+d=sys.argv[1] if len(sys.argv)>1 else './dh_out/s5c'
 TAG=sys.argv[2] if len(sys.argv)>2 else 'T1'
 ATK=(100,290)
 s=pd.read_csv(f'{d}/scada_values.csv'); g=pd.read_csv(f'{d}/ground_truth.csv')

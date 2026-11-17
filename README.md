@@ -56,6 +56,13 @@ CHAN=results/study5_run17/chan_ctown.json MPLBACKEND=Agg EP=8 CAL=56 \
 python3 code/analyse17.py ctown
 ```
 
+> **Note on paths and pre-registration hashes.** The run-time absolute paths in the
+> original scripts (under the scratch working directory where the experiments were run)
+> were replaced with repository-relative paths (`./…`) for portability. This path prefix is
+> the only difference from the exact byte-for-byte code whose MD5 hashes were frozen in the
+> pre-registration files under `registrations/`; the logic is unchanged. `MD5SUMS.txt` lists
+> the hashes of the code as published here.
+
 ## Integrity
 
 `MD5SUMS.txt` lists the hashes of the code and figure scripts as published here. The
